@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="ru" style="font-family:Arial,sans-serif">
+<head>
+    <meta charset="UTF-8">
+    <title>Обработка текста</title>
+</head>
+<body>
+    <h1>Токенизация, лемматизация и стемминг текста</h1>
+    <h3 style="color: red"><strong>{{ error_message }}</strong></h3>
+    <form method="POST" action="/" enctype="multipart/form-data">
+      <p><input type="file" name="files" accept=".pdf" multiple></p>
+        <p>
+            <label for="stemming">Стемминг<input type="radio" name="process_type" id="stemming" value="stemming" checked></label>&nbsp&nbsp
+            <label for="lemmatization">Лемматизация<input type="radio" name="process_type" id="lemmatization" value="lemmatization"></label>
+        </p>
+      <p>
+          <input type="submit" name="process_files" value="Обработать файлы">
+          <input type="submit" name="process_example" value="Обработать пример (Евгений Онегин А. С. Пушкин)">
+      </p>
+    </form>
+</body>
+</html>

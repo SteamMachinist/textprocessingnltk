@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="ru" style="font-family:Arial,sans-serif">
+<head>
+    <meta charset="UTF-8">
+    <title>Результат обработки</title>
+    <style>
+        table {
+            align-self: center;
+            width: 70%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+</style>
+</head>
+<body>
+<h1 style="text-align: center">Результат {{ process_type }}</h1>
+<p style="text-align: center">Список файлов: {{ files_list }}</p>
+    <table>
+        <tr>
+            <th>Токен</th>
+            <th>Количество</th>
+        </tr>
+        {% for key, value in tokens.items() %}
+            <tr>
+                <td>{{ key }}</td>
+                <td>{{ value }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
