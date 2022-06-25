@@ -5,7 +5,7 @@ from collections import defaultdict
 
 import nltk
 import fitz
-import spacy
+import pymorphy2
 
 from flask import Flask, render_template, request, redirect, url_for
 from nltk.stem.snowball import SnowballStemmer
@@ -21,13 +21,11 @@ app.config['MAX_CONTENT_LENGTH'] = 40 * 1024 * 1024
 
 nltk.download('punkt')
 nltk.download("stopwords")
-spacy.cli.download("ru_core_news_sm")
+
 
 stops = set(stopwords.words("russian"))
 stemmer_rus = SnowballStemmer("russian")
-
-nlp_ru = spacy.load("ru_core_news_sm")
-
+morph = pymorphy2.MorphAnalyzer()
 
 
 def get_all_text(folder):
@@ -78,12 +76,11 @@ def get_stemming_result(folder: str):
 
 @app.route('/result/l/<folder>')
 def get_lemmatization_results(folder: str):
-    doc = nlp_ru(get_all_text(folder))
-
+    lemmatized = [morph.parse(token)[0].normal_form for token in tokenize(get_all_text(folder))]
     return render_template('result.html',
                            process_type="лемматизации",
                            files_list=str(os.listdir(os.path.join(app.config['UPLOAD_FOLDER'], folder))),
-                           tokens=processed_tokens_to_sorted_dictionary(filter_tokens([token.lemma_ for token in doc])))
+                           tokens=processed_tokens_to_sorted_dictionary(lemmatized))
 
 
 def is_valid(filename: str) -> bool:
