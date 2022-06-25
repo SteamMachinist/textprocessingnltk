@@ -21,15 +21,13 @@ app.config['MAX_CONTENT_LENGTH'] = 40 * 1024 * 1024
 
 nltk.download('punkt')
 nltk.download("stopwords")
-spacy.cli.download("en_core_web_sm")
 spacy.cli.download("ru_core_news_sm")
 
-stops = set(stopwords.words("english")).union(set(stopwords.words("russian")))
+stops = set(stopwords.words("russian"))
 stemmer_rus = SnowballStemmer("russian")
-stemmer_en = SnowballStemmer("english")
 
 nlp_ru = spacy.load("ru_core_news_sm")
-nlp_en = spacy.load("en_core_web_sm")
+
 
 
 def get_all_text(folder):
@@ -68,9 +66,7 @@ def get_stemming_result(folder: str):
     tokenized = tokenize(get_all_text(folder))
     stemmed_tokens = []
     for token in tokenized:
-        if token.isascii():
-            stemmed_tokens.append(stemmer_en.stem(token))
-        elif has_cyrillic(token):
+        if has_cyrillic(token):
             stemmed_tokens.append(stemmer_rus.stem(token))
         else:
             stemmed_tokens.append(token)
@@ -82,11 +78,7 @@ def get_stemming_result(folder: str):
 
 @app.route('/result/l/<folder>')
 def get_lemmatization_results(folder: str):
-    all_text = get_all_text(folder)
-    if has_cyrillic(all_text):
-        doc = nlp_ru(all_text)
-    else:
-        doc = nlp_en(all_text)
+    doc = nlp_ru(get_all_text(folder))
 
     return render_template('result.html',
                            process_type="лемматизации",
