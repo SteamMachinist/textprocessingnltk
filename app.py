@@ -22,9 +22,9 @@ app.config['MAX_CONTENT_LENGTH'] = 40 * 1024 * 1024
 nltk.download('punkt')
 nltk.download("stopwords")
 
-
 stops = set(stopwords.words("russian"))
 stemmer_rus = SnowballStemmer("russian")
+
 morph = pymorphy2.MorphAnalyzer()
 
 
@@ -44,10 +44,6 @@ def tokenize(all_text: str) -> list:
     return [word.lower() for word in nltk.word_tokenize(all_text) if word.isalpha() and word.lower() not in stops]
 
 
-def filter_tokens(tokens: list) -> list:
-    return [word.lower() for word in tokens if word.isalpha() and word.lower() not in stops]
-
-
 def processed_tokens_to_sorted_dictionary(processed_tokens: list) -> dict:
     token_dict = defaultdict(int)
     for token in processed_tokens:
@@ -55,19 +51,10 @@ def processed_tokens_to_sorted_dictionary(processed_tokens: list) -> dict:
     return dict(sorted(token_dict.items(), key=lambda item: item[1], reverse=True))
 
 
-def has_cyrillic(text):
-    return bool(re.search('[а-яА-Я]', text))
-
-
 @app.route('/result/s/<folder>')
 def get_stemming_result(folder: str):
     tokenized = tokenize(get_all_text(folder))
-    stemmed_tokens = []
-    for token in tokenized:
-        if has_cyrillic(token):
-            stemmed_tokens.append(stemmer_rus.stem(token))
-        else:
-            stemmed_tokens.append(token)
+    stemmed_tokens = [stemmer_rus.stem(token) for token in tokenized]
     return render_template('result.html',
                            process_type="стемминга",
                            files_list=str(os.listdir(os.path.join(app.config['UPLOAD_FOLDER'], folder))),
@@ -76,7 +63,8 @@ def get_stemming_result(folder: str):
 
 @app.route('/result/l/<folder>')
 def get_lemmatization_results(folder: str):
-    lemmatized = [morph.parse(token)[0].normal_form for token in tokenize(get_all_text(folder))]
+    tokenized = tokenize(get_all_text(folder))
+    lemmatized = [morph.parse(token)[0].normal_form for token in tokenized]
     return render_template('result.html',
                            process_type="лемматизации",
                            files_list=str(os.listdir(os.path.join(app.config['UPLOAD_FOLDER'], folder))),
