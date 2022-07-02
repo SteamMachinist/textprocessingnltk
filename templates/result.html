@@ -23,17 +23,29 @@
 </style>
 </head>
 <body>
-<h1 style="text-align: center">Результат {{ process_type }}</h1>
+<h1 style="text-align: center">
+    Результат
+    {% if process_type == 'lem' %}
+        лемматизации
+    {% elif process_type == 'stem' %}
+        стемминга
+    {% else %}
+        обработки
+    {% endif %}
+</h1>
 <p style="text-align: center">Список файлов: {{ files_list }}</p>
+<p style="text-align: center">
+    <a href="{{ url_for('download_result', folder=folder, process_type=process_type) }}">Скачать результат .csv</a>
+</p>
     <table>
         <tr>
             <th>Токен</th>
             <th>Количество</th>
         </tr>
-        {% for key, value in tokens.items() %}
+        {% for token, amount in tokens_with_amount %}
             <tr>
-                <td>{{ key }}</td>
-                <td>{{ value }}</td>
+                <td>{{ token }}</td>
+                <td>{{ amount }}</td>
             </tr>
         {% endfor %}
     </table>
